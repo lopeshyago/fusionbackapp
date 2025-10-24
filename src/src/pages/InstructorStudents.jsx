@@ -9,10 +9,10 @@ import { Users, Search, Plus, FileText, Activity, Calendar, ChevronRight, ArrowL
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Workout } from "@/api/entities";
-import { PhysicalAssessment } from "@/api/entities";
-import { Condominium } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Workout } from "@/api/entities_new";
+import { PhysicalAssessment } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
 import InstructorBottomNavBar from "@/components/instructor/InstructorBottomNavBar";
 
 export default function InstructorStudents() {

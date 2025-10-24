@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { UploadFile } from '@/api/integrations';
-import { MaintenanceItem } from '@/api/entities';
+import { MaintenanceItem } from '@/api/entities_new';
 import { Image as ImageIcon, Video, UploadCloud, X, Loader2 } from 'lucide-react';
 
 export default function MaintenanceFormModal({ isOpen, onClose, onSave, condominiumId }) {

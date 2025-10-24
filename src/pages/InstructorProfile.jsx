@@ -8,8 +8,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, User as UserIcon, Phone, MapPin } from "lucide-react";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Condominium } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
 
 export default function InstructorProfile() {
   const [user, setUser] = useState(null);

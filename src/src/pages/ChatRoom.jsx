@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { User } from '@/api/entities';
-import { Channel } from '@/api/entities';
-import { Message } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { Channel } from '@/api/entities_new';
+import { Message } from '@/api/entities_new';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

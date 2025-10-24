@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
+import { User } from "@/api/entities_new";
 import AdminUserForm from "../components/admin/AdminUserForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {

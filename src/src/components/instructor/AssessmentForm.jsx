@@ -10,7 +10,7 @@ import { Calendar as CalendarIcon, Save } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { PhysicalAssessment } from "@/api/entities";
+import { PhysicalAssessment } from "@/api/entities_new";
 
 export default function AssessmentForm({ isOpen, onOpenChange, studentId, instructorId, onSave }) {
   const [formData, setFormData] = useState({

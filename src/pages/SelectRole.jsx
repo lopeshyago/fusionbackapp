@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Users, GraduationCap, Calendar, Clock, Bell, Activity, ArrowRight, Plus, QrCode, MessageCircle, BarChart3, AlertTriangle, Play, Calculator, ArrowLeft, Building2, CheckCircle, UserCheck, AlertCircle, User as UserIcon, Wrench, KeyRound } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { ParqResponse } from "@/api/entities";
-import { AdminInvite } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { ParqResponse } from "@/api/entities_new";
+import { AdminInvite } from "@/api/entities_new";
 import BottomNavBar from "../components/student/BottomNavBar";
 import InstructorBottomNavBar from "../components/instructor/InstructorBottomNavBar";
 import AdminBottomNavBar from "../components/admin/AdminBottomNavBar";

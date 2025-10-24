@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Save, Calculator, Activity, User, Ruler, Target, UserCheck } from "lucide-react";
-import { DetailedAssessment } from "@/api/entities";
+import { DetailedAssessment } from "@/api/entities_new";
 
 const circumferenceFields = [
   { id: 'neck', label: 'Pescoço (cm)' },

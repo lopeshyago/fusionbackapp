@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { InstructorInvite } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { InstructorInvite } from "@/api/entities_new";
 
 const logoUrl = "/fusionlogo.png";
 

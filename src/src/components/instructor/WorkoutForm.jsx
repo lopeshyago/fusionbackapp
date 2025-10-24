@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Save } from "lucide-react";
-import { Workout } from "@/api/entities";
+import { Workout } from "@/api/entities_new";
 
 export default function WorkoutForm({ isOpen, onOpenChange, workout, studentId, instructorId, onSave }) {
   const [formData, setFormData] = useState({

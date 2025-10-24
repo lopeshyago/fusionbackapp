@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
+import { User } from "@/api/entities_new";
 import AdminUserForm from "../components/admin/AdminUserForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -201,16 +201,8 @@ export default function AdminUsers() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
-      <header className="bg-black text-white p-4 shadow-lg">
-        <div className="container mx-auto">
-          <div className="flex items-center gap-3">
-            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8 md:h-10 md:w-10" />
-            <h1 className="text-lg md:text-2xl font-bold">Usuários</h1>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto p-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-orange-700 mb-6">Usuários</h1>
         {/* Filtros e Ações */}
         <div className="mb-6 space-y-4">
           <div className="space-y-3">

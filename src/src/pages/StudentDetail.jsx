@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User as UserEntity } from "@/api/entities"; // Renamed User to UserEntity to avoid conflict with Lucide icon
-import { Workout } from "@/api/entities";
-import { PhysicalAssessment } from "@/api/entities";
+import { User as UserEntity } from "@/api/entities_new"; // Renamed User to UserEntity to avoid conflict with Lucide icon
+import { Workout } from "@/api/entities_new";
+import { PhysicalAssessment } from "@/api/entities_new";
 import WorkoutBuilderForm from "../components/instructor/WorkoutBuilderForm";
 
 export default function StudentDetail() {

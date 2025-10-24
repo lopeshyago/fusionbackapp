@@ -10,7 +10,7 @@ import {
   Plus, Trash2, Copy, Dumbbell, Video, 
   Save, Search 
 } from "lucide-react";
-import { Exercise } from "@/api/entities";
+import { Exercise } from "@/api/entities_new";
 
 export default function WorkoutBuilder({ student, instructor, templates, onWorkoutCreated, onCancel }) {
   const [workoutData, setWorkoutData] = useState({

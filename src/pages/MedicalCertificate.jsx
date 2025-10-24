@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Upload, FileText, Calendar, CheckCircle, X } from "lucide-react";
-import { User } from "@/api/entities";
+import { User } from "@/api/entities_new";
 import { UploadFile } from "@/api/integrations";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";

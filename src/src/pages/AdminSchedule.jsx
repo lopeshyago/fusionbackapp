@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users, MapPin, ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { Class } from "@/api/entities";
-import { User } from "@/api/entities";
-import { Condominium } from "@/api/entities";
+import { Class } from "@/api/entities_new";
+import { User } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AdminSchedule() {

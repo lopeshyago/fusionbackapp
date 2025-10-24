@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User } from "@/api/entities";
+import { User } from "@/api/entities_new";
 
 export default function InstructorForm({ isOpen, onOpenChange, instructor, condominiums, onSave }) {
   const [formData, setFormData] = useState({

@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, Users, Calendar, ArrowLeft, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Class } from "@/api/entities";
-import { Booking } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Class } from "@/api/entities_new";
+import { Booking } from "@/api/entities_new";
 
 export default function AdminReports() {
   const [reportData, setReportData] = useState({});
@@ -38,16 +38,8 @@ export default function AdminReports() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
-      <header className="bg-black text-white p-4 shadow-lg">
-        <div className="container mx-auto">
-          <div className="flex items-center gap-3">
-            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8 md:h-10 md:w-10" />
-            <h1 className="text-lg md:text-2xl font-bold">Relatórios</h1>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto p-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-orange-700 mb-6">Relatórios</h1>
         {/* Cards de Métricas - Mobile Responsivo */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
           <Card className="border-blue-200 hover:shadow-lg transition-shadow">

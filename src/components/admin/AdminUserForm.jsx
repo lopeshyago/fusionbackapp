@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { User } from '@/api/entities';
-import { Condominium } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { Condominium } from '@/api/entities_new';
 import { toast, useToast } from "@/components/ui/use-toast";
 
 export default function AdminUserForm({ isOpen, onOpenChange, user, onSave }) {

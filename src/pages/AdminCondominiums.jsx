@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, MapPin, Users, ArrowLeft, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { Condominium } from "@/api/entities";
+import { Condominium } from "@/api/entities_new";
 import CondominiumForm from "../components/admin/CondominiumForm";
 
 export default function AdminCondominiums() {
@@ -71,16 +71,8 @@ export default function AdminCondominiums() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
-      <header className="bg-black text-white p-4 shadow-lg">
-        <div className="container mx-auto">
-          <div className="flex items-center gap-3">
-            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8 md:h-10 md:w-10" />
-            <h1 className="text-lg md:text-2xl font-bold">Condomínios</h1>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto p-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-orange-700 mb-6">Condomínios</h1>
         {/* Header Mobile Responsivo */}
         <div className="mb-6">
           <div className="flex flex-col gap-4">

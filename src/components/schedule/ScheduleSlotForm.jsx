@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Save, Clock, Palette } from "lucide-react";
-import { WeeklySchedule } from "@/api/entities";
+import { WeeklySchedule } from "@/api/entities_new";
 
 const colors = [
   { name: "Laranja", value: "bg-orange-500" },

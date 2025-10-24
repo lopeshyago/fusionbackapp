@@ -3,9 +3,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wrench, Image as ImageIcon, Video, AlertCircle, CheckCircle, Clock, ChevronDown, User as UserIcon, Building2 } from 'lucide-react';
-import { MaintenanceItem } from '@/api/entities';
-import { User } from '@/api/entities';
-import { Condominium } from '@/api/entities';
+import { MaintenanceItem } from '@/api/entities_new';
+import { User } from '@/api/entities_new';
+import { Condominium } from '@/api/entities_new';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -72,14 +72,8 @@ export default function AdminMaintenance() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center gap-3">
-          <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8" />
-          <h1 className="text-xl font-bold text-gray-800">Painel de Manutenção</h1>
-        </div>
-      </header>
-
       <main className="container mx-auto p-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">Painel de Manutenção</h1>
         {isLoading ? (
           <p>Carregando chamados...</p>
         ) : items.length === 0 ? (

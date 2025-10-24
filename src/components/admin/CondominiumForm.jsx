@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Save, Plus, X } from "lucide-react";
-import { Condominium } from "@/api/entities";
+import { Condominium } from "@/api/entities_new";
 
 export default function CondominiumForm({ isOpen, onOpenChange, condominium, onSave }) {
   const [formData, setFormData] = useState({

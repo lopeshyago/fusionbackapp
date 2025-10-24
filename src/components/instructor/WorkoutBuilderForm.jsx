@@ -17,7 +17,7 @@ import {
   ChevronRight, ChevronDown, AlertCircle, CheckCircle2
 } from "lucide-react";
 import ExerciseSelector from './ExerciseSelector';
-import { Workout } from "@/api/entities";
+import { Workout } from "@/api/entities_new";
 
 export default function WorkoutBuilderForm({ 
   isOpen, onOpenChange, workout, selectedStudent, instructorId, 

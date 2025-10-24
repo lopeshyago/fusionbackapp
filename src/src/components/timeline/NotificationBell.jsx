@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, BellRing } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Notification } from '@/api/entities';
-import { User } from '@/api/entities';
+import { Notification } from '@/api/entities_new';
+import { User } from '@/api/entities_new';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

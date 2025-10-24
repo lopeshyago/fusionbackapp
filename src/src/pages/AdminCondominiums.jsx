@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, MapPin, Users, ArrowLeft, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { Condominium } from "@/api/entities";
+import { Condominium } from "@/api/entities_new";
 import CondominiumForm from "../components/admin/CondominiumForm";
 
 export default function AdminCondominiums() {

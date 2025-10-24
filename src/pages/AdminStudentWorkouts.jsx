@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLocation, Link } from 'react-router-dom';
-import { User } from '@/api/entities';
-import { Workout } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { Workout } from '@/api/entities_new';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

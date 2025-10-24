@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, MapPin, Activity as ActivityIcon, Plus, Edit, Trash2, Calendar, CalendarPlus } from "lucide-react";
-import { User } from "@/api/entities";
-import { Condominium } from "@/api/entities";
-import { WeeklySchedule } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
+import { WeeklySchedule } from "@/api/entities_new";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ScheduleSlotForm from "../components/schedule/ScheduleSlotForm";
 import BatchScheduleForm from "../components/schedule/BatchScheduleForm";

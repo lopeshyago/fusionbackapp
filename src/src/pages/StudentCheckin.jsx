@@ -9,7 +9,7 @@ import {
   LessonPlan, 
   Booking, 
   Condominium 
-} from "@/api/entities";
+} from "@/api/entities_new";
 import BottomNavBar from "../components/student/BottomNavBar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";

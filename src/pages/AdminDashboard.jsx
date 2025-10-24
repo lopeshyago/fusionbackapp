@@ -37,12 +37,15 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      <header className="bg-black text-white p-4 shadow-2xl">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex flex-col items-center gap-3">
-            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold text-white">Painel Administrativo</span>
-          </div>
+      <header className="sticky top-0 z-40 w-full bg-black shadow-xl">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <button
+            onClick={() => navigateTo('Index')}
+            className="flex items-center gap-3 focus-visible hover:opacity-80 transition-opacity"
+          >
+            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-auto" />
+          </button>
+
           <Button onClick={handleLogout} variant="ghost" className="text-white hover:bg-white/20">
             Sair
           </Button>

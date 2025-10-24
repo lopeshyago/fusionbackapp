@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { InstructorInvite } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { InstructorInvite } from "@/api/entities_new";
 
 const logoUrl = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68afb6f88b147cdfe2384437/ed2388368_icon-512.png";
 

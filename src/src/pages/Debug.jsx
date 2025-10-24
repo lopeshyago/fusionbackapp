@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { User } from '@/api/entities';
+import { User } from '@/api/entities_new';
 import {
   Table,
   TableBody,

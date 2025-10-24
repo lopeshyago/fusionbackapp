@@ -6,9 +6,9 @@ import {
   LessonPlan, 
   Activity, 
   Condominium 
-} from "@/api/entities";
-import { Notice } from '@/api/entities';
-import { Workout } from '@/api/entities';
+} from "@/api/entities_new";
+import { Notice } from '@/api/entities_new';
+import { Workout } from '@/api/entities_new';
 
 // Hook para gerenciar dados offline de forma inteligente
 export const useOfflineData = (entityName, fetchFunction, dependencies = [], cacheKey = null) => {
@@ -142,7 +142,7 @@ export const useOfflineCheckin = () => {
     }
 
     try {
-      const { Booking } = await import('@/api/entities');
+      const { Booking } = await import('@/api/entities_new');
       const result = await Booking.create(checkinData);
       return { success: true, offline: false, data: result };
     } catch (error) {

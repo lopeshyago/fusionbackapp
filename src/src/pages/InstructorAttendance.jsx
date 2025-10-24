@@ -8,10 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UserCheck, ArrowLeft, Clock, Users, Calendar, CheckCircle, AlertCircle, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { WeeklySchedule } from "@/api/entities";
-import { Booking } from "@/api/entities";
-import { Condominium } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { WeeklySchedule } from "@/api/entities_new";
+import { Booking } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import InstructorBottomNavBar from "../components/instructor/InstructorBottomNavBar";

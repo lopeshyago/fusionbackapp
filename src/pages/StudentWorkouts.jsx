@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 // Removed Link import as it's no longer directly used for navigation within this component's header
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Workout } from "@/api/entities";
-import { WorkoutSession } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Workout } from "@/api/entities_new";
+import { WorkoutSession } from "@/api/entities_new";
 import WorkoutTimer from "../components/student/WorkoutTimer";
 import WorkoutSessionSelector from "../components/student/WorkoutSessionSelector";
 import BottomNavBar from "../components/student/BottomNavBar";

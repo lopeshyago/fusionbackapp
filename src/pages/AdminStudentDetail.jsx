@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User } from '@/api/entities';
-import { Condominium } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { Condominium } from '@/api/entities_new';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, User as UserIcon, Dumbbell, Calculator } from 'lucide-react';

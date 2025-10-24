@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, Users, Calendar, ArrowLeft, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Class } from "@/api/entities";
-import { Booking } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Class } from "@/api/entities_new";
+import { Booking } from "@/api/entities_new";
 
 export default function AdminReports() {
   const [reportData, setReportData] = useState({});

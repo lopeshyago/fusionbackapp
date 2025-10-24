@@ -11,7 +11,7 @@ import InstructorBottomNavBar from "@/components/instructor/InstructorBottomNavB
 // Removed AdminBottomNavBar import as it will no longer be used
 import OfflineManager from "@/components/common/OfflineManager";
 import { OfflineDataPreloader } from "@/components/common/OfflineDataManager";
-import { User } from '@/api/entities';
+import { User } from '@/api/entities_new';
 import { useOptimizedNavigation, NavigationLoader } from '@/components/common/NavigationHelper';
 
 const logoUrl = "/fusionlogo.png";
@@ -270,14 +270,11 @@ export default function Layout({ children, currentPageName }) {
           {showHeader && (
             <header className="sticky top-0 z-40 w-full bg-black shadow-xl">
               <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                <button 
-                  onClick={() => navigateTo('Index')} 
+                <button
+                  onClick={() => navigateTo('Index')}
                   className="flex items-center gap-3 focus-visible hover:opacity-80 transition-opacity"
                 >
-                  <div className="bg-orange-500 p-2 rounded-lg">
-                    <span className="text-white font-bold text-sm">F</span>
-                  </div>
-                  <span className="text-xl font-bold text-white">FUSION</span>
+                  <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-auto" />
                 </button>
                 
                 {/* Botão de Voltar para a página ANTERIOR. Simples. */}

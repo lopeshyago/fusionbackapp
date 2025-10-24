@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { ParqQuestion } from "@/api/entities";
-import { ParqResponse } from "@/api/entities";
-import { User } from "@/api/entities";
+import { ParqQuestion } from "@/api/entities_new";
+import { ParqResponse } from "@/api/entities_new";
+import { User } from "@/api/entities_new";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert"; // Added Alert import

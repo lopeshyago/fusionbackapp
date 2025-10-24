@@ -1,6 +1,6 @@
 import React from 'react';
 import { Home, Calendar, Activity, User as UserIcon, Camera } from 'lucide-react';
-import { User } from '@/api/entities';
+import { User } from '@/api/entities_new';
 import { useOptimizedNavigation } from '../common/NavigationHelper';
 
 const NavItem = ({ page, icon: Icon, label, isActive, onClick }) => {

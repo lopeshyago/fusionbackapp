@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { User } from "@/api/entities";
-import { Condominium } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Condominium } from "@/api/entities_new";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

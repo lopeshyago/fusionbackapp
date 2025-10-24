@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, Users, Clock } from 'lucide-react';
-import { Poll } from '@/api/entities';
-import { PollVote } from '@/api/entities';
+import { Poll } from '@/api/entities_new';
+import { PollVote } from '@/api/entities_new';
 import { format, differenceInHours } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

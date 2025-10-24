@@ -99,18 +99,61 @@ app.get('/api/:table', authMiddleware, async (req,res) => {
     res.json(rows);
   } catch(e){ console.error(e); res.status(500).json({ error: 'failed' }); }
 });
+
 app.post('/api/:table', authMiddleware, async (req,res) => {
   try {
     const table = req.params.table;
     const data = req.body;
+
+    // Get table schema
     const colsRow = await allSql(`PRAGMA table_info(${table})`);
     const cols = colsRow.map(c=>c.name);
-    if (cols.includes('data')) {
-      const r = await runSql(`INSERT INTO ${table} (user_id, data) VALUES (?,?)`, [req.user.id, JSON.stringify(data)]);
-      res.json({ id: r.lastID });
-    } else {
-      return res.status(400).json({ error: 'table does not support generic insert via API' });
+
+    // Build INSERT query dynamically
+    const insertCols = cols.filter(col => col !== 'id' && col !== 'created_at' && data.hasOwnProperty(col));
+    const placeholders = insertCols.map(() => '?').join(',');
+    const values = insertCols.map(col => data[col]);
+
+    // Add user_id if table has it and not provided
+    if (cols.includes('user_id') && !data.user_id) {
+      insertCols.push('user_id');
+      values.push(req.user.id);
     }
+
+    const sql = `INSERT INTO ${table} (${insertCols.join(',')}) VALUES (${placeholders})`;
+    const r = await runSql(sql, values);
+    res.json({ id: r.lastID });
+  } catch(e){ console.error(e); res.status(500).json({ error: 'failed' }); }
+});
+
+app.put('/api/:table/:id', authMiddleware, async (req,res) => {
+  try {
+    const table = req.params.table;
+    const id = req.params.id;
+    const data = req.body;
+
+    // Get table schema
+    const colsRow = await allSql(`PRAGMA table_info(${table})`);
+    const cols = colsRow.map(c=>c.name);
+
+    // Build UPDATE query dynamically
+    const updateCols = cols.filter(col => col !== 'id' && col !== 'created_at' && data.hasOwnProperty(col));
+    const setClause = updateCols.map(col => `${col} = ?`).join(',');
+    const values = updateCols.map(col => data[col]);
+    values.push(id); // Add ID for WHERE clause
+
+    const sql = `UPDATE ${table} SET ${setClause} WHERE id = ?`;
+    await runSql(sql, values);
+    res.json({ success: true });
+  } catch(e){ console.error(e); res.status(500).json({ error: 'failed' }); }
+});
+
+app.delete('/api/:table/:id', authMiddleware, async (req,res) => {
+  try {
+    const table = req.params.table;
+    const id = req.params.id;
+    await runSql(`DELETE FROM ${table} WHERE id = ?`, [id]);
+    res.json({ success: true });
   } catch(e){ console.error(e); res.status(500).json({ error: 'failed' }); }
 });
 

@@ -7,8 +7,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users, Search, ArrowLeft, UserPlus, Dumbbell, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Workout } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Workout } from "@/api/entities_new";
 
 export default function InstructorAssignWorkout() {
   const [students, setStudents] = useState([]);

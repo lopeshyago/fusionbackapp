@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { User } from "@/api/entities";
+import { User } from "@/api/entities_new";
 import { useOptimizedNavigation } from "../components/common/NavigationHelper";
 import PersonalDataStep from "../components/onboarding/PersonalDataStep";
 import CondominiumStep from "../components/onboarding/CondominiumStep";

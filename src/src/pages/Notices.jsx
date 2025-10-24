@@ -4,8 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Bell, AlertCircle, Info, PartyPopper, Edit, Trash2 } from "lucide-react";
-import { Notice } from "@/api/entities";
-import { User } from "@/api/entities";
+import { Notice } from "@/api/entities_new";
+import { User } from "@/api/entities_new";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import NoticeForm from "../components/notices/NoticeForm";

@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities";
-import { Workout } from "@/api/entities";
+import { User } from "@/api/entities_new";
+import { Workout } from "@/api/entities_new";
 import WorkoutBuilderForm from "../components/instructor/WorkoutBuilderForm";
 import AssignWorkoutModal from "../components/instructor/AssignWorkoutModal";
 import InstructorBottomNavBar from "../components/instructor/InstructorBottomNavBar";

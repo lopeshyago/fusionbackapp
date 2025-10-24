@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { PostInteraction } from '@/api/entities';
+import { PostInteraction } from '@/api/entities_new';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';

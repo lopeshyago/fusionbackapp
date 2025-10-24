@@ -11,7 +11,7 @@ import InstructorBottomNavBar from "@/components/instructor/InstructorBottomNavB
 // Removed AdminBottomNavBar import as it will no longer be used
 import OfflineManager from "@/components/common/OfflineManager";
 import { OfflineDataPreloader } from "@/components/common/OfflineDataManager";
-import { User } from '@/api/entities';
+import { User } from '@/api/entities_new';
 import { useOptimizedNavigation, NavigationLoader } from '@/components/common/NavigationHelper';
 
 const logoUrl = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68afb6f88b147cdfe2384437/ed2388368_icon-512.png";

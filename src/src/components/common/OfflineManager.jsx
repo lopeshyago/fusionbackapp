@@ -155,13 +155,13 @@ class SyncQueue {
     
     switch (type) {
       case 'CHECKIN':
-        const { Booking } = await import('@/api/entities');
+        const { Booking } = await import('@/api/entities_new');
         return await Booking.create(data);
       case 'UPDATE_PROFILE':
-        const { User } = await import('@/api/entities');
+        const { User } = await import('@/api/entities_new');
         return await User.updateMyUserData(data);
       case 'CREATE_MESSAGE':
-        const { Message } = await import('@/api/entities');
+        const { Message } = await import('@/api/entities_new');
         return await Message.create(data);
       default:
         throw new Error('Unknown action type');

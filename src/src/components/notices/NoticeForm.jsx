@@ -12,7 +12,7 @@ import { Calendar as CalendarIcon, Save } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Notice } from "@/api/entities";
+import { Notice } from "@/api/entities_new";
 
 export default function NoticeForm({ isOpen, onOpenChange, notice, onSave }) {
   const [formData, setFormData] = useState({

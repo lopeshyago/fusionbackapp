@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLocation, Link } from 'react-router-dom';
-import { User } from '@/api/entities';
-import { DetailedAssessment } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { DetailedAssessment } from '@/api/entities_new';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calculator, Plus, Edit, Trash2, ArrowLeft, Calendar, BarChart2 } from 'lucide-react';

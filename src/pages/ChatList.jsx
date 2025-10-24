@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { User } from '@/api/entities';
-import { Channel } from '@/api/entities';
-import { Message } from '@/api/entities';
-import { Condominium } from '@/api/entities';
+import { User } from '@/api/entities_new';
+import { Channel } from '@/api/entities_new';
+import { Message } from '@/api/entities_new';
+import { Condominium } from '@/api/entities_new';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, MessageSquarePlus, UserCheck, Trash2, Archive, Inbox, Building } from 'lucide-react';
