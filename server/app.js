@@ -66,16 +66,41 @@ function authMiddleware(req, res, next){
   }
 }
 
+// Ensure expected columns exist on users (lightweight migration)
+async function ensureUserColumns() {
+  try {
+    const cols = await allSql("PRAGMA table_info(users)");
+    const names = new Set(cols.map(c => c.name));
+    const statements = [];
+
+    if (!names.has('address')) statements.push("ALTER TABLE users ADD COLUMN address TEXT");
+    if (!names.has('par_q_completed')) statements.push("ALTER TABLE users ADD COLUMN par_q_completed INTEGER DEFAULT 0");
+    if (!names.has('par_q_has_risk')) statements.push("ALTER TABLE users ADD COLUMN par_q_has_risk INTEGER DEFAULT 0");
+    if (!names.has('medical_certificate_url')) statements.push("ALTER TABLE users ADD COLUMN medical_certificate_url TEXT");
+    if (!names.has('medical_certificate_required_date')) statements.push("ALTER TABLE users ADD COLUMN medical_certificate_required_date TEXT");
+    if (!names.has('condominium_id')) statements.push("ALTER TABLE users ADD COLUMN condominium_id INTEGER");
+    if (!names.has('account_blocked')) statements.push("ALTER TABLE users ADD COLUMN account_blocked INTEGER DEFAULT 0");
+
+    for (const stmt of statements) {
+      await runSql(stmt);
+    }
+  } catch (e) {
+    console.error('ensureUserColumns failed', e);
+  }
+}
+
+ensureUserColumns();
+
 // Auth endpoints
 app.post('/auth/login', async (req,res) => {
   try {
     const { email, password } = req.body;
-    const row = await getSql('SELECT u.id as id, u.password_hash as password_hash, p.role as role FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.email=?', [email]);
+    const row = await getSql('SELECT u.id as id, u.password_hash as password_hash, u.user_type as user_type, p.role as role FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.email=?', [email]);
     if (!row) return res.status(401).json({ error: 'Invalid credentials' });
     const ok = await bcrypt.compare(password, row.password_hash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = generateToken({ id: row.id, email, role: row.role || 'aluno' });
-    res.json({ token, user: { id: row.id, email, role: row.role || 'aluno' } });
+    const token = generateToken({ id: row.id, email, role: row.role || 'aluno', user_type: row.user_type || null });
+    res.json({ token, user: { id: row.id, email, role: row.role || 'aluno', user_type: row.user_type || null } });
   } catch(e){ console.error(e); res.status(500).json({ error: 'login failed' }); }
 });
 app.post('/auth/register', async (req,res) => {
@@ -164,8 +189,57 @@ app.post('/upload', authMiddleware, upload.single('file'), async (req,res) => {
 });
 
 app.get('/me', authMiddleware, async (req,res)=> {
-  const row = await getSql('SELECT u.id,u.email,p.full_name,p.avatar_url,p.role FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.id=?', [req.user.id]);
+  const row = await getSql('SELECT u.id,u.email,u.user_type,p.full_name,p.avatar_url,p.role FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.id=?', [req.user.id]);
   res.json({ user: row });
+});
+
+// Update profile/user data
+app.put('/profile', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const data = req.body || {};
+
+    // Split fields between users and profiles
+    const userAllowed = ['user_type','cpf','phone','plan_status','address','par_q_completed','par_q_has_risk','medical_certificate_url','medical_certificate_required_date','condominium_id','account_blocked'];
+    const profileAllowed = ['full_name','avatar_url','role'];
+
+    const userUpdates = Object.fromEntries(Object.entries(data).filter(([k]) => userAllowed.includes(k)));
+    const profileUpdates = Object.fromEntries(Object.entries(data).filter(([k]) => profileAllowed.includes(k)));
+
+    // Normalize booleans to 0/1 for SQLite
+    if (typeof userUpdates.par_q_completed === 'boolean') userUpdates.par_q_completed = userUpdates.par_q_completed ? 1 : 0;
+    if (typeof userUpdates.par_q_has_risk === 'boolean') userUpdates.par_q_has_risk = userUpdates.par_q_has_risk ? 1 : 0;
+    if (typeof userUpdates.account_blocked === 'boolean') userUpdates.account_blocked = userUpdates.account_blocked ? 1 : 0;
+
+    // Update users table
+    if (Object.keys(userUpdates).length > 0) {
+      const setCols = Object.keys(userUpdates).map(k => `${k} = ?`).join(', ');
+      const values = Object.keys(userUpdates).map(k => userUpdates[k]);
+      values.push(userId);
+      await runSql(`UPDATE users SET ${setCols} WHERE id = ?`, values);
+    }
+
+    // Ensure profile exists
+    const prof = await getSql('SELECT id FROM profiles WHERE user_id = ?', [userId]);
+    if (!prof) {
+      await runSql('INSERT INTO profiles (user_id) VALUES (?)', [userId]);
+    }
+
+    // Update profiles table
+    if (Object.keys(profileUpdates).length > 0) {
+      const setCols = Object.keys(profileUpdates).map(k => `${k} = ?`).join(', ');
+      const values = Object.keys(profileUpdates).map(k => profileUpdates[k]);
+      values.push(userId);
+      await runSql(`UPDATE profiles SET ${setCols} WHERE user_id = ?`, values);
+    }
+
+    // Return updated snapshot similar to /me
+    const row = await getSql('SELECT u.id,u.email,u.user_type,u.cpf,u.phone,u.plan_status,u.address,u.par_q_completed,u.par_q_has_risk,u.medical_certificate_url,u.medical_certificate_required_date,u.condominium_id,u.account_blocked,p.full_name,p.avatar_url,p.role FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.id=?', [userId]);
+    res.json({ user: row, success: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'profile update failed' });
+  }
 });
 
 app.listen(PORT, ()=> console.log('API listening on', PORT));

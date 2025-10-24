@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://129.146.39.46:4001";
+// Preferir localhost no desenvolvimento; pode ser sobrescrito por VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4001";
 
 class LocalApiClient {
   constructor() {

@@ -706,13 +706,13 @@ export default function Index() {
     }
 
     if (type === 'admin') {
-      // **CORREÇÃO**: Se o usuário já for admin, não pede senha, apenas mostra o painel.
+      // Se já for admin, abre o painel. Caso contrário, ir para a página de login de admin.
       if (user?.user_type === 'admin') {
         setSelectedUserType('admin');
-        return;
+      } else {
+        const loginPage = 'AdminLogin';
+        window.location.href = `/${loginPage}`;
       }
-      // Se não for admin, aí sim pede a senha para tentar a promoção.
-      setShowAdminPasswordModal(true);
       return;
     }
 
