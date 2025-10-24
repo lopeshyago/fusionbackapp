@@ -44,7 +44,7 @@ export default function StudentLogin() {
 
 
       // Redirecionar para o painel de aluno
-      navigateTo('Index');
+      navigateTo('StudentDashboard');
 
     } catch (err) {
       console.error('Erro no login:', err);

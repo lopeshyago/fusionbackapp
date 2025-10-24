@@ -44,7 +44,7 @@ export default function AdminLogin() {
 
 
       // Redirecionar para o painel de admin
-      navigateTo('Index');
+      navigateTo('AdminDashboard');
 
     } catch (err) {
       console.error('Erro no login:', err);

@@ -600,8 +600,11 @@ export default function Index() {
           return; // Finaliza a execução aqui para o instrutor
         }
 
-        // 3. Para ADMIN, não faz NADA, deixando-o cair na tela de seleção.
-        // `selectedUserType` permanecerá `null`, exibindo a tela de seleção de perfil.
+        // 3. Para ADMIN, vai direto para o painel administrativo
+        if (currentUser.user_type === 'admin') {
+          setSelectedUserType('admin');
+          return;
+        }
 
       } catch (error) {
         console.log("Usuário não logado ou erro ao carregar, exibindo tela de seleção.", error);
@@ -758,9 +761,9 @@ export default function Index() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
         <div className="text-center">
-          <img src={logoUrl} alt="Fusion Logo" className="h-20 w-56 mx-auto mb-4 drop-shadow-xl" />
+          <img src={logoUrl} alt="Fusion Logo" className="h-20 w-56 mx-auto mb-4 drop-shadow-2xl filter brightness-110" />
           <p className="text-gray-600 text-lg">Carregando...</p>
 
         </div>
@@ -787,11 +790,11 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white">
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden p-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-600" />
 
         <div className="relative z-10 text-center max-w-6xl mx-auto">
           <div className="mb-8">
-            <img src={logoUrl} alt="Fusion Logo" className="h-20 w-56 mx-auto drop-shadow-xl" />
+            <img src={logoUrl} alt="Fusion Logo" className="h-20 w-56 mx-auto drop-shadow-2xl filter brightness-110" />
           </div>
 
 

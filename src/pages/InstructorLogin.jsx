@@ -44,7 +44,7 @@ export default function InstructorLogin() {
 
 
       // Redirecionar para o painel de instrutor
-      navigateTo('Index');
+      navigateTo('InstructorDashboard');
 
     } catch (err) {
       console.error('Erro no login:', err);
