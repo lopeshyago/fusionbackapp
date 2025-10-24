@@ -85,7 +85,7 @@ export default function InstructorLogin() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
               {error && (
                 <div className="bg-red-100 border border-red-200 text-red-700 text-sm rounded-md p-3 text-center">
                   {error}
@@ -102,6 +102,7 @@ export default function InstructorLogin() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="border-orange-200"
                   disabled={isLoading}
+                  autoComplete="username"
                 />
               </div>
 
@@ -116,6 +117,7 @@ export default function InstructorLogin() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="border-orange-200 pr-10"
                     disabled={isLoading}
+                    autoComplete="current-password"
                   />
                   <button
                     type="button"

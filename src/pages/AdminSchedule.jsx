@@ -74,17 +74,9 @@ export default function AdminSchedule() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
       <header className="bg-black text-white p-4 shadow-lg">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Calendar className="h-8 w-8" />
-            <h1 className="text-2xl font-bold">Agenda Global</h1>
-          </div>
-          <Link to={createPageUrl("Index")}>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
+        <div className="container mx-auto flex items-center gap-3">
+          <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8 md:h-10 md:w-10" />
+          <h1 className="text-2xl font-bold">Agenda Global</h1>
         </div>
       </header>
 

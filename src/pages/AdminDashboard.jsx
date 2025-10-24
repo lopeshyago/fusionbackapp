@@ -26,6 +26,10 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.clear();
+    // Clear any cached form data
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href);
+    }
     navigateTo('Index');
   };
 
@@ -35,8 +39,9 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-white pb-20">
       <header className="bg-black text-white p-4 shadow-2xl">
         <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logoUrl} alt="Fusion Logo" className="h-8 w-auto max-w-[120px] object-contain" />
+          <div className="flex flex-col items-center gap-3">
+            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-10 w-auto" />
+            <span className="text-xl font-bold text-white">Painel Administrativo</span>
           </div>
           <Button onClick={handleLogout} variant="ghost" className="text-white hover:bg-white/20">
             Sair

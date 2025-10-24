@@ -125,17 +125,9 @@ export default function AdminTeam() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
       <header className="bg-black text-white p-4 shadow-lg">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between mb-4 md:mb-0">
-            <div className="flex items-center gap-3">
-              <UserCheck className="h-6 w-6 md:h-8 md:w-8" />
-              <h1 className="text-lg md:text-2xl font-bold">Equipe</h1>
-            </div>
-            <Link to={createPageUrl("Index")}>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                <ArrowLeft className="h-4 w-4 mr-1 md:mr-2" />
-                <span className="hidden md:inline">Voltar</span>
-              </Button>
-            </Link>
+          <div className="flex items-center gap-3">
+            <img src="/fusionlogo.png" alt="Fusion Logo" className="h-8 w-8 md:h-10 md:w-10" />
+            <h1 className="text-lg md:text-2xl font-bold">Equipe</h1>
           </div>
         </div>
       </header>

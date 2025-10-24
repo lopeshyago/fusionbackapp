@@ -761,7 +761,7 @@ export default function Index() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-orange-300 to-orange-500 flex items-center justify-center">
         <div className="text-center">
           <img src={logoUrl} alt="Fusion Logo" className="h-20 w-56 mx-auto mb-4 drop-shadow-2xl filter brightness-110" />
           <p className="text-gray-600 text-lg">Carregando...</p>
@@ -790,7 +790,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white">
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden p-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-600" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-300 to-orange-500" />
 
         <div className="relative z-10 text-center max-w-6xl mx-auto">
           <div className="mb-8">

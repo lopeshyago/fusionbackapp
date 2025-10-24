@@ -291,7 +291,7 @@ export default function Schedule() {
         <header className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-white rounded-xl shadow-md"><Calendar className="h-8 w-8 text-orange-600" /></div>
+              <img src="/fusionlogo.png" alt="Fusion Logo" className="h-12 w-12 md:h-16 md:w-16" />
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Grade de Horários</h1>
                 <p className="text-gray-600 mt-1">{isAdmin ? 'Gerencie a grade semanal fixa' : 'Consulte os horários das atividades'}</p>
