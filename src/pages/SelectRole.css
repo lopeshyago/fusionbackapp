@@ -1,0 +1,3 @@
+.select-role{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#071024;color:#e6edf3;text-align:center}
+.role-buttons{display:flex;gap:12px;margin-top:20px}
+.role-buttons button{padding:10px 16px;border-radius:8px;border:none;cursor:pointer;background:#fff;color:#111;font-weight:600}
