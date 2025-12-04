@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { LayoutGrid, Users, Calendar, Camera, Wrench, Bell } from 'lucide-react';
+import { LayoutGrid, Users, Calendar, Camera, Bell, User } from 'lucide-react';
 import { useOptimizedNavigation } from '../common/NavigationHelper';
 
 const NavItem = ({ page, icon: Icon, label, isActive, onClick }) => {
@@ -37,17 +36,18 @@ export default function AdminBottomNavBar({ activePage }) {
 
   const navItems = [
     { icon: LayoutGrid, label: 'Início', page: 'Index', onClick: handleHomeClick },
-    { page: 'Timeline', icon: Camera, label: 'Timeline', page: 'Timeline' },
-    { page: 'AdminUsers', icon: Users, label: 'Usuários', page: 'AdminUsers' },
-    { page: 'Notices', icon: Bell, label: 'Avisos', page: 'Notices' },
-    { page: 'Schedule', icon: Calendar, label: 'Grade', page: 'Schedule' }
+    { icon: Camera, label: 'Timeline', page: 'Timeline' },
+    { icon: Users, label: 'Usuários', page: 'AdminUsers' },
+    { icon: User, label: 'Perfil', page: 'AdminProfile' },
+    { icon: Bell, label: 'Avisos', page: 'Notices' },
+    { icon: Calendar, label: 'Grade', page: 'Schedule' },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t-2 border-orange-200 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] md:hidden z-50">
       <div className="flex justify-around items-stretch h-full">
         {navItems.map((item) => (
-          <NavItem 
+          <NavItem
             key={item.label}
             page={item.page}
             icon={item.icon}
@@ -60,3 +60,4 @@ export default function AdminBottomNavBar({ activePage }) {
     </div>
   );
 }
+

@@ -20,6 +20,11 @@ export default function CondominiumForm({ isOpen, onOpenChange, condominium, onS
     is_active: true
   });
   const [newArea, setNewArea] = useState('');
+  const AVAILABLE_AREAS = [
+    'Academia', 'Piscina', 'Quadra', 'Salão de Festas', 'Playground',
+    'Sauna', 'Brinquedoteca', 'Espaço Gourmet', 'Estacionamento',
+    'Bicicletário', 'Campo', 'Pista de Corrida'
+  ];
 
   useEffect(() => {
     if (condominium) {
@@ -134,35 +139,32 @@ export default function CondominiumForm({ isOpen, onOpenChange, condominium, onS
 
           <div className="space-y-2">
             <Label>Áreas Disponíveis</Label>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Ex: Academia, Piscina, Quadra..."
-                value={newArea}
-                onChange={(e) => setNewArea(e.target.value)}
-                className="border-orange-200"
-                onKeyPress={(e) => e.key === 'Enter' && addArea()}
-              />
-              <Button type="button" onClick={addArea} variant="outline">
-                <Plus className="h-4 w-4" />
-              </Button>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-2 border rounded-md border-orange-200 bg-white">
+              {AVAILABLE_AREAS.map((area) => {
+                const checked = (formData.areas || []).includes(area);
+                return (
+                  <label key={area} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(isChecked) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          areas: isChecked ? [...(prev.areas||[]), area] : (prev.areas||[]).filter(a => a !== area)
+                        }));
+                      }}
+                    />
+                    {area}
+                  </label>
+                );
+              })}
             </div>
-            
-            <div className="flex flex-wrap gap-2 mt-2">
-              {formData.areas.map((area, index) => (
-                <Badge key={index} variant="outline" className="border-orange-200">
-                  {area}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="ml-1 h-4 w-4 p-0"
-                    onClick={() => removeArea(area)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
+            {formData.areas && formData.areas.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.areas.map((area, idx) => (
+                  <Badge key={idx} variant="outline" className="border-orange-200">{area}</Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

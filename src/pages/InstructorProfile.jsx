@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, User as UserIcon, Phone, MapPin } from "lucide-react";
+import { Save, User as UserIcon, Phone, MapPin, Image as ImageIcon } from "lucide-react";
 import { createPageUrl } from '@/utils';
 import { User } from "@/api/entities_new";
 import { Condominium } from "@/api/entities_new";
@@ -25,6 +25,8 @@ export default function InstructorProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
 
   const loadData = async () => {
     setIsLoading(true);
@@ -35,14 +37,17 @@ export default function InstructorProfile() {
       ]);
       setUser(currentUser);
       setCondominiums(condos);
-      setFormData({
+      const initial = {
         full_name: currentUser.full_name || "",
         phone: currentUser.phone || "",
-        cpf: currentUser.cpf ? currentUser.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : "",
+        cpf: currentUser.cpf ? currentUser.cpf.replace(/(\\d{3})(\\d{3})(\\d{3})(\\d{2})/, '$1.$2.$3-$4') : "",
         address: currentUser.address || "",
         condominium_id: currentUser.condominium_id || "",
-        sex: currentUser.sex || ""
-      });
+        sex: currentUser.sex || "",
+        avatar_url: currentUser.avatar_url || ""
+      };
+      setFormData(initial);
+      setAvatarPreview(initial.avatar_url || "");
     } catch (err) {
       setError("Não foi possível carregar seus dados.");
     }
@@ -72,6 +77,58 @@ export default function InstructorProfile() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
+  // Salvar perfil com upload de avatar (preview + envio ao servidor)
+  const handleSaveProfileEnhanced = async () => {
+    setError("");
+    setSuccess("");
+    const { full_name, phone, address, cpf, condominium_id, sex } = formData;
+    if (!full_name || !phone || !address || !cpf || !condominium_id || !sex) {
+      setError("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const cpfNumbers = (cpf || '').replace(/\D/g, '');
+    if (cpfNumbers.length !== 11) {
+      setError("CPF deve ter 11 dígitos.");
+      return;
+    }
+
+    try {
+      let avatarUrl = formData.avatar_url || '';
+      if (avatarFile) {
+        try {
+          const { localApi } = await import('@/api/localApi');
+          const up = await localApi.uploadFile(avatarFile);
+          if (up?.url) {
+            avatarUrl = up.url;
+            setAvatarPreview(avatarUrl);
+            setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+          }
+        } catch (e) {
+          console.warn('Falha no upload do avatar. Continuando sem atualizar avatar_url.', e);
+        }
+      }
+
+      await User.updateMyUserData({
+        full_name,
+        phone,
+        address,
+        cpf: cpfNumbers,
+        condominium_id,
+        sex,
+        avatar_url: avatarUrl,
+        plan_status: 'active',
+        user_type: 'instructor'
+      });
+      setSuccess("Perfil salvo! Redirecionando para seu painel...");
+      setTimeout(() => {
+        window.location.href = createPageUrl('InstructorDashboard');
+      }, 1500);
+    } catch (err) {
+      setError("Não foi possível salvar os dados. Tente novamente.");
+    }
+  };
+
   const handleSaveProfile = async () => {
     setError("");
     setSuccess("");
@@ -96,7 +153,7 @@ export default function InstructorProfile() {
       });
       setSuccess("Perfil salvo! Redirecionando para seu painel...");
       setTimeout(() => {
-        window.location.href = createPageUrl('Index');
+        window.location.href = createPageUrl('InstructorDashboard');
       }, 1500);
     } catch (err) {
       setError("Não foi possível salvar os dados. Tente novamente.");
@@ -123,8 +180,25 @@ export default function InstructorProfile() {
           {error && <p className="text-red-600">{error}</p>}
           {success && <p className="text-green-600">{success}</p>}
           
-          <div className="flex items-center justify-center">
-            <Avatar className="h-24 w-24"><AvatarFallback className="bg-orange-100 text-orange-700 text-2xl">{formData.full_name?.charAt(0) || 'I'}</AvatarFallback></Avatar>
+          <div className="flex items-center justify-center flex-col gap-2">
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="Prévia do avatar" className="h-24 w-24 rounded-full object-cover border" />
+            ) : (
+              <Avatar className="h-24 w-24"><AvatarFallback className="bg-orange-100 text-orange-700 text-2xl">{formData.full_name?.charAt(0) || 'I'}</AvatarFallback></Avatar>
+            )}
+            <div className="w-full">
+              <Label>Foto do Perfil</Label>
+              <Input type="file" accept="image/*" onChange={e => {
+                const f = e.target.files?.[0] || null;
+                setAvatarFile(f);
+                if (f) {
+                  const url = URL.createObjectURL(f);
+                  setAvatarPreview(url);
+                } else {
+                  setAvatarPreview(formData.avatar_url || '');
+                }
+              }} />
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,7 +235,7 @@ export default function InstructorProfile() {
           <div><Label htmlFor="phone">Telefone/WhatsApp *</Label><Input id="phone" value={formData.phone} onChange={handleInputChange} /></div>
           <div><Label htmlFor="address">Endereço Completo *</Label><Input id="address" value={formData.address} onChange={handleInputChange} /></div>
           
-          <Button onClick={handleSaveProfile} className="w-full fusion-gradient">
+          <Button onClick={handleSaveProfileEnhanced} className="w-full fusion-gradient">
             <Save className="h-4 w-4 mr-2" />
             Salvar Perfil e Acessar Painel
           </Button>
@@ -170,3 +244,4 @@ export default function InstructorProfile() {
     </div>
   );
 }
+

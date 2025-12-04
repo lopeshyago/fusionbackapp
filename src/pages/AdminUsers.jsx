@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities_new";
+import { User, InstructorInvite } from "@/api/entities_new";
 import AdminUserForm from "../components/admin/AdminUserForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -51,6 +51,8 @@ export default function AdminUsers() {
   const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'full_name', direction: 'ascending' });
   const { toast } = useToast();
+  const [invites, setInvites] = useState([]);
+  const [me, setMe] = useState(null);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -73,17 +75,30 @@ export default function AdminUsers() {
 
   useEffect(() => {
     fetchData();
+    (async () => { try { const m = await User.me(); setMe(m); } catch {} })();
+    (async () => { try { const list = await InstructorInvite.list('-created_at'); setInvites(list); } catch {} })();
   }, [fetchData]);
+
+  const generateCode = () => Math.random().toString(36).substr(2,8).toUpperCase();
+
+  const handleGenerateInvite = async (days = 30) => {
+    try {
+      const code = generateCode();
+      const expires = new Date(Date.now() + days*24*60*60*1000).toISOString();
+      await InstructorInvite.create({ code, status: 'pending', invited_by: me?.id || null, expires_at: expires, type: 'instructor' });
+      toast({ title: 'Convite gerado', description: `Código: ${code}`, variant: 'success' });
+      const list = await InstructorInvite.list('-created_at'); setInvites(list);
+    } catch (e) {
+      console.error('Erro ao gerar convite', e);
+      
+    }
+  };
 
   const handleSave = async () => {
     await fetchData();
     setIsFormOpen(false);
     setEditingUser(null);
-    toast({
-      title: "Sucesso!",
-      description: "Usuário salvo com sucesso.",
-      variant: "success",
-    });
+    
   };
 
   const handleEdit = (user) => {
@@ -96,18 +111,10 @@ export default function AdminUsers() {
       try {
         await User.delete(userId);
         await fetchData(); // Recarrega a lista após exclusão
-        toast({
-          title: "Sucesso!",
-          description: "Usuário excluído com sucesso.",
-          variant: "success",
-        });
+        
       } catch (e) {
         console.error('Erro ao excluir usuário:', e);
-        toast({
-          title: "Erro ao excluir",
-          description: e.message || "Erro ao excluir usuário. Verifique se ele não possui dados vinculados.",
-          variant: "destructive",
-        });
+        
       }
     }
   };
@@ -131,11 +138,7 @@ export default function AdminUsers() {
         });
       } catch (e) {
         console.error("Erro ao alterar tipo de usuário:", e);
-        toast({
-          title: "Erro ao alterar tipo de usuário",
-          description: e.message || "Falha ao alterar o tipo do usuário.",
-          variant: "destructive",
-        });
+        
       }
     }
   };
@@ -244,6 +247,35 @@ export default function AdminUsers() {
             </div>
           </div>
         </div>
+
+        {/* Convites de Instrutor */}
+        <Card className="mb-6 border-orange-200">
+          <CardHeader>
+            <CardTitle>Convites de Instrutor</CardTitle>
+            <CardDescription>Gere códigos e compartilhe com novos instrutores.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 flex-wrap mb-3">
+              <Button className="bg-orange-500 hover:bg-orange-600" onClick={() => handleGenerateInvite(30)}>Gerar Convite (30 dias)</Button>
+              <Button variant="outline" onClick={() => handleGenerateInvite(7)}>Gerar (7 dias)</Button>
+            </div>
+            {invites && invites.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {invites.slice(0,6).map((inv) => (
+                  <div key={inv.id} className="p-3 border rounded-lg bg-white flex items-center justify-between">
+                    <div>
+                      <div className="font-mono text-sm">{inv.code || '—'}</div>
+                      <div className="text-xs text-gray-500">Status: {inv.status || 'pending'} {inv.expires_at ? `· expira: ${new Date(inv.expires_at).toLocaleDateString('pt-BR')}` : ''}</div>
+                    </div>
+                    <Badge variant="outline" className="border-orange-200">Instrutor</Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-600">Nenhum convite gerado ainda.</div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Cards de Resumo - Mobile Otimizado */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -455,3 +487,8 @@ export default function AdminUsers() {
     </div>
   );
 }
+
+
+
+
+

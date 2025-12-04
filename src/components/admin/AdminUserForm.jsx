@@ -4,59 +4,72 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { User } from '@/api/entities_new';
-import { Condominium } from '@/api/entities_new';
-import { toast, useToast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { User, Condominium } from '@/api/entities_new';
 
 export default function AdminUserForm({ isOpen, onOpenChange, user, onSave }) {
   const { register, handleSubmit, reset, setValue } = useForm();
   const [condominiums, setCondominiums] = useState([]);
-  const { toast } = useToast();
-  const [selectedUserType, setSelectedUserType] = useState(user?.user_type || 'student');
+  const [selectedUserType, setSelectedUserType] = useState('student');
 
   useEffect(() => {
-    async function loadCondos() {
-      const condos = await Condominium.list();
-      setCondominiums(condos);
+    // Load condominiums once dialog is opened
+    const loadCondos = async () => {
+      try {
+        const list = await Condominium.list();
+        setCondominiums(list || []);
+      } catch (e) {
+        console.error('Erro ao carregar condomínios:', e);
+      }
+    };
+
+    if (isOpen) {
+      loadCondos();
     }
-    loadCondos();
-  }, []);
+  }, [isOpen]);
 
   useEffect(() => {
+    // Prefill form when editing; otherwise reset defaults
     if (user) {
-      setValue('full_name', user.full_name);
-      setValue('email', user.email);
-      setValue('phone', user.phone);
-      setValue('condominium_id', user.condominium_id);
-      setValue('user_type', user.user_type);
-      setSelectedUserType(user.user_type);
+      setValue('full_name', user.full_name || '');
+      setValue('email', user.email || '');
+      setValue('phone', user.phone || '');
+      setValue('condominium_id', user.condominium_id != null ? String(user.condominium_id) : '');
+      setSelectedUserType(user.user_type || 'student');
     } else {
       reset();
       setSelectedUserType('student');
     }
-  }, [user, isOpen, reset, setValue]);
+  }, [user, reset, setValue]);
 
   const onSubmit = async (data) => {
     try {
       const payload = {
-        ...data,
+        full_name: data.full_name || '',
+        email: user ? (user.email || '') : (data.email || ''),
+        phone: data.phone || '',
         user_type: selectedUserType,
+        condominium_id: data.condominium_id ? Number(data.condominium_id) : null,
       };
 
       if (user) {
         await User.update(user.id, payload);
-        toast({ title: "Sucesso!", description: "Usuário atualizado com sucesso." });
       } else {
-        // A criação de usuário não está implementada neste formulário, apenas edição.
-        toast({ title: "Ação não suportada", description: "A criação de novos usuários deve ser feita pelo próprio usuário.", variant: "destructive" });
-        return;
+        const token = localStorage.getItem('fusion_token');
+        await fetch('/admin/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
       }
-      onSave();
+
+      if (onSave) onSave();
       onOpenChange(false);
     } catch (error) {
-      console.error("Erro ao salvar usuário:", error);
-      toast({ title: "Erro", description: "Não foi possível salvar as informações do usuário.", variant: "destructive" });
+      console.error('Erro ao salvar usuário:', error);
     }
   };
 
@@ -65,6 +78,7 @@ export default function AdminUserForm({ isOpen, onOpenChange, user, onSave }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{user ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
+          <DialogDescription>Preencha os dados e salve</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -82,10 +96,7 @@ export default function AdminUserForm({ isOpen, onOpenChange, user, onSave }) {
 
           <div>
             <Label htmlFor="user_type">Tipo de Usuário</Label>
-            <Select
-              value={selectedUserType}
-              onValueChange={setSelectedUserType}
-            >
+            <Select value={selectedUserType} onValueChange={setSelectedUserType}>
               <SelectTrigger id="user_type">
                 <SelectValue placeholder="Selecione o tipo de usuário" />
               </SelectTrigger>
@@ -101,18 +112,21 @@ export default function AdminUserForm({ isOpen, onOpenChange, user, onSave }) {
             <Label htmlFor="condominium_id">Condomínio</Label>
             <Select
               onValueChange={(value) => setValue('condominium_id', value)}
-              defaultValue={user?.condominium_id}
+              defaultValue={user?.condominium_id != null ? String(user.condominium_id) : undefined}
             >
               <SelectTrigger id="condominium_id">
                 <SelectValue placeholder="Selecione o condomínio" />
               </SelectTrigger>
               <SelectContent>
-                {condominiums.map(condo => (
-                  <SelectItem key={condo.id} value={condo.id}>{condo.name}</SelectItem>
+                {condominiums.map((condo) => (
+                  <SelectItem key={condo.id} value={String(condo.id)}>
+                    {condo.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">Cancelar</Button>

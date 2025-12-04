@@ -1,7 +1,6 @@
-const fs = require('fs');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const DB_FILE = process.env.SQLITE_FILE || path.join(__dirname, 'data', 'fusion.db');
 const db = new sqlite3.Database(DB_FILE);
@@ -15,23 +14,15 @@ function runSql(sql, params = []) {
   });
 }
 
-function allSql(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-}
-
-async function ensureMinimalSchema() {
-  // Create minimal tables if they don't exist
+async function ensureSchema() {
   await runSql(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    user_type TEXT,
+    plan_status TEXT,
+    condominium_id INTEGER
   )`);
-
   await runSql(`CREATE TABLE IF NOT EXISTS profiles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -40,123 +31,57 @@ async function ensureMinimalSchema() {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
   )`);
-
-  // Ensure user_type column exists
-  const cols = await allSql("PRAGMA table_info(users)");
-  const names = new Set(cols.map(c => c.name));
-  if (!names.has('user_type')) {
-    await runSql("ALTER TABLE users ADD COLUMN user_type TEXT");
-  }
+  await runSql(`CREATE TABLE IF NOT EXISTS condominiums (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    areas TEXT,
+    invite_code TEXT UNIQUE
+  )`);
 }
 
 async function seedDatabase() {
   try {
-    console.log('Iniciando seed do banco de dados...');
+    console.log('Iniciando seed básico (UTF-8)...');
+    await ensureSchema();
 
-    await ensureMinimalSchema();
+    const hashed = bcrypt.hashSync('123456', 10);
 
-    // Hash da senha padrão
-    const hashedPassword = await bcrypt.hash('123456', 10);
+    // Condomínio padrão
+    await runSql(`INSERT OR IGNORE INTO condominiums (id,name,areas,invite_code) VALUES (1,?,?,?)`, [
+      'Condomínio Fusion', JSON.stringify(['Academia','Piscina']), 'CONDO-TEST'
+    ]);
 
-    // Inserir usuário admin
-    const adminResult = await new Promise((resolve, reject) => {
-      db.run(`
-        INSERT OR IGNORE INTO users (email, password_hash)
-        VALUES (?, ?)
-      `, ['admin@fusion.com', hashedPassword], function(err) {
-        if (err) reject(err);
-        else resolve(this);
-      });
-    });
+    // Admin
+    await runSql(`INSERT OR IGNORE INTO users (email,password_hash,user_type,plan_status) VALUES (?,?,?,?)`, [
+      'admin@fusion.com', hashed, 'admin', 'active'
+    ]);
+    const admin = await new Promise((resolve, reject) => db.get(`SELECT id FROM users WHERE email=?`, ['admin@fusion.com'], (e,r)=> e?reject(e):resolve(r)));
+    if (admin?.id) await runSql(`INSERT OR IGNORE INTO profiles (user_id,full_name,role) VALUES (?,?,?)`, [admin.id, 'Administrador Fusion','admin']);
 
-    // Garantir user_type = 'admin'
-    await runSql(`UPDATE users SET user_type = 'admin' WHERE email = ?`, ['admin@fusion.com']);
+    // Instrutor
+    await runSql(`INSERT OR IGNORE INTO users (email,password_hash,user_type,plan_status,condominium_id) VALUES (?,?,?,?,1)`, [
+      'instrutor@fusion.com', hashed, 'instructor', 'active'
+    ]);
+    const inst = await new Promise((resolve, reject) => db.get(`SELECT id FROM users WHERE email=?`, ['instrutor@fusion.com'], (e,r)=> e?reject(e):resolve(r)));
+    if (inst?.id) await runSql(`INSERT OR IGNORE INTO profiles (user_id,full_name,role) VALUES (?,?,?)`, [inst.id, 'Instrutor Fusion','instrutor']);
 
-    if (adminResult.lastID) {
-      console.log('✓ Usuário admin criado com ID:', adminResult.lastID);
+    // Aluno
+    await runSql(`INSERT OR IGNORE INTO users (email,password_hash,user_type,plan_status,condominium_id) VALUES (?,?,?,?,1)`, [
+      'aluno@fusion.com', hashed, 'student', 'active'
+    ]);
+    const alu = await new Promise((resolve, reject) => db.get(`SELECT id FROM users WHERE email=?`, ['aluno@fusion.com'], (e,r)=> e?reject(e):resolve(r)));
+    if (alu?.id) await runSql(`INSERT OR IGNORE INTO profiles (user_id,full_name,role) VALUES (?,?,?)`, [alu.id, 'Aluno Fusion','aluno']);
 
-      // Inserir perfil do admin
-      await new Promise((resolve, reject) => {
-        db.run(`
-          INSERT OR IGNORE INTO profiles (user_id, full_name, role)
-          VALUES (?, ?, ?)
-        `, [adminResult.lastID, 'Administrador Fusion', 'admin'], function(err) {
-          if (err) reject(err);
-          else resolve(this);
-        });
-      });
-    }
-
-    // Inserir instrutor
-    const instructorResult = await new Promise((resolve, reject) => {
-      db.run(`
-        INSERT OR IGNORE INTO users (email, password_hash)
-        VALUES (?, ?)
-      `, ['instrutor@fusion.com', hashedPassword], function(err) {
-        if (err) reject(err);
-        else resolve(this);
-      });
-    });
-
-    // Garantir user_type = 'instructor'
-    await runSql(`UPDATE users SET user_type = 'instructor' WHERE email = ?`, ['instrutor@fusion.com']);
-
-    if (instructorResult.lastID) {
-      console.log('✓ Usuário instrutor criado com ID:', instructorResult.lastID);
-
-      // Inserir perfil do instrutor
-      await new Promise((resolve, reject) => {
-        db.run(`
-          INSERT OR IGNORE INTO profiles (user_id, full_name, role)
-          VALUES (?, ?, ?)
-        `, [instructorResult.lastID, 'Instrutor Fusion', 'instrutor'], function(err) {
-          if (err) reject(err);
-          else resolve(this);
-        });
-      });
-    }
-
-    // Inserir aluno
-    const studentResult = await new Promise((resolve, reject) => {
-      db.run(`
-        INSERT OR IGNORE INTO users (email, password_hash)
-        VALUES (?, ?)
-      `, ['aluno@fusion.com', hashedPassword], function(err) {
-        if (err) reject(err);
-          else resolve(this);
-      });
-    });
-
-    // Garantir user_type = 'student'
-    await runSql(`UPDATE users SET user_type = 'student' WHERE email = ?`, ['aluno@fusion.com']);
-
-    if (studentResult.lastID) {
-      console.log('✓ Usuário aluno criado com ID:', studentResult.lastID);
-
-      // Inserir perfil do aluno
-      await new Promise((resolve, reject) => {
-        db.run(`
-          INSERT OR IGNORE INTO profiles (user_id, full_name, role)
-          VALUES (?, ?, ?)
-        `, [studentResult.lastID, 'Aluno Fusion', 'aluno'], function(err) {
-          if (err) reject(err);
-          else resolve(this);
-        });
-      });
-    }
-
-    console.log('✓ Seed concluído com sucesso!');
-    console.log('');
-    console.log('Dados de acesso:');
+    console.log('✓ Seed básico concluído (UTF-8).');
     console.log('Admin: admin@fusion.com / 123456');
     console.log('Instrutor: instrutor@fusion.com / 123456');
     console.log('Aluno: aluno@fusion.com / 123456');
-
-  } catch (error) {
-    console.error('Erro durante o seed:', error);
+  } catch (e) {
+    console.error('Erro durante o seed básico:', e);
   } finally {
     db.close();
   }
 }
 
 seedDatabase();
+

@@ -25,7 +25,19 @@ export default function AdminCondominiums() {
     for (let attempt = 0; attempt < retries; attempt++) {
       try {
         const fetchedCondominiums = await Condominium.list('-created_date');
-        setCondominiums(fetchedCondominiums);
+        const normalizeAreas = (areas) => {
+          if (Array.isArray(areas)) return areas;
+          if (typeof areas === 'string') {
+            try { return JSON.parse(areas); } catch { return []; }
+          }
+          return areas || [];
+        };
+        setCondominiums(
+          fetchedCondominiums.map(c => ({
+            ...c,
+            areas: normalizeAreas(c.areas)
+          }))
+        );
         setError(null); // Ensure error is cleared on success
         break; // Exit loop on successful fetch
       } catch (error) {
@@ -265,3 +277,5 @@ export default function AdminCondominiums() {
     </div>
   );
 }
+
+

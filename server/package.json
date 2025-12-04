@@ -4,7 +4,9 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "seed:basic": "node seed_final.js",
+    "seed:all": "node seed_all.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

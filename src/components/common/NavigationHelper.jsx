@@ -8,16 +8,20 @@ export const useOptimizedNavigation = () => {
   const navigateTo = (page, params = {}, replace = false) => {
     // Adiciona loading state visual
     document.body.style.cursor = 'wait';
-    
-    const url = params && Object.keys(params).length > 0 
-      ? `${page}?${new URLSearchParams(params).toString()}`
-      : page;
-    
-    if (replace) {
-      navigate(createPageUrl(url), { replace: true });
-    } else {
-      navigate(createPageUrl(url));
+    // Permite passar options no segundo arg (ex.: { replace: true })
+    let optionsReplace = replace;
+    let queryParams = params || {};
+    if (params && typeof params === 'object' && 'replace' in params && Object.keys(params).length === 1) {
+      optionsReplace = !!params.replace;
+      queryParams = {};
     }
+
+    const hasParams = queryParams && Object.keys(queryParams).length > 0;
+    const basePath = page;
+    const url = hasParams ? `${basePath}?${new URLSearchParams(queryParams).toString()}` : basePath;
+
+    if (optionsReplace) navigate(createPageUrl(url), { replace: true });
+    else navigate(createPageUrl(url));
     
     // Remove loading cursor após navegação
     setTimeout(() => {

@@ -22,7 +22,9 @@ export const getStudentsForTeam = async (teamId) => {
 };
 
 export const getAllUsers = async () => {
-  return localApi.get('users');
+  // Use joined endpoint to include full_name and avatar from profiles
+  const res = await localApi.request('/admin/users_full');
+  return res;
 };
 
 export const promoteUserToAdmin = async (userId) => {

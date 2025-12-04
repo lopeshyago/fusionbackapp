@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,10 +34,11 @@ export default function InstructorLogin() {
     try {
       const result = await localApi.login(email, password);
 
-      // Verificar se o usuário é instrutor
-      if (result.user.role !== 'instrutor') {
+      // Verificar se o usuÃ¡rio Ã© instrutor
+      const utype = (result?.user?.user_type || '').toLowerCase();
+      if (utype !== 'instructor') {
         setError('Acesso negado. Esta área é restrita para instrutores.');
-        localApi.logout();
+        await localApi.logout();
         return;
       }
 
@@ -74,7 +75,7 @@ export default function InstructorLogin() {
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
+      {/* ConteÃºdo Principal */}
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-80px)]">
         <Card className="w-full max-w-md shadow-2xl border-orange-200">
           <CardHeader className="text-center">

@@ -821,6 +821,13 @@ export default function Index() {
                 <Button className="w-full fusion-gradient text-white shadow-lg hover:shadow-xl transition-all">
                   Entrar <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={(e) => { e.stopPropagation(); window.location.href = "/StudentRegistration"; }}
+                >
+                  Cadastrar
+                </Button>
               </CardContent>
             </Card>
 
@@ -836,6 +843,13 @@ export default function Index() {
                 </p>
                 <Button className="w-full fusion-gradient text-white shadow-lg hover:shadow-xl transition-all">
                   Entrar <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={(e) => { e.stopPropagation(); window.location.href = "/InstructorRegistration"; }}
+                >
+                  Cadastrar
                 </Button>
               </CardContent>
             </Card>

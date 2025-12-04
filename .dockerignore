@@ -1,0 +1,11 @@
+.git
+node_modules
+.qodo
+.vite
+Dockerfile.frontend
+Nova pasta.zip
+*.log
+dist
+server/node_modules
+server/data
+server/uploads

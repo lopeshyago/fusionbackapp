@@ -1,4 +1,4 @@
-
+﻿
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { MapPin, Save, User as UserIcon, Phone, Mail, Cake, Calendar, Building2,
 import { createPageUrl } from '@/utils';
 import { User } from "@/api/entities_new";
 import { Condominium } from "@/api/entities_new";
-import { UploadFile } from "@/api/integrations";
+// upload serÃ¡ feito via localApi.uploadFile
 import BottomNavBar from "../components/student/BottomNavBar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -51,6 +51,8 @@ export default function StudentProfile() {
     const [success, setSuccess] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [photoUploadError, setPhotoUploadError] = useState("");
     const { navigateTo } = useOptimizedNavigation(); // REPLACED useNavigate
@@ -58,7 +60,7 @@ export default function StudentProfile() {
     const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
     const formData = watch();
 
-    // Função para calcular idade precisa
+    // FunÃ§Ã£o para calcular idade precisa
     const calculateAge = (birthDate) => {
         if (!birthDate) return "";
         
@@ -75,7 +77,7 @@ export default function StudentProfile() {
         return age;
     };
 
-    // Detectar se é primeiro acesso (cadastro incompleto)
+    // Detectar se Ã© primeiro acesso (cadastro incompleto)
     const isFirstAccess = (userData) => {
         return !userData.phone || !userData.address || !userData.cpf || !userData.date_of_birth || !userData.sex;
     };
@@ -87,7 +89,7 @@ export default function StudentProfile() {
                 const currentUser = await User.me();
                 setUser(currentUser);
                 
-                // Verificar se é primeiro acesso - se sim, ativar modo de edição automaticamente
+                // Verificar se Ã© primeiro acesso - se sim, ativar modo de ediÃ§Ã£o automaticamente
                 const firstAccess = isFirstAccess(currentUser);
                 setIsEditing(firstAccess);
                 
@@ -105,9 +107,10 @@ export default function StudentProfile() {
                     date_of_birth: currentUser.date_of_birth || "",
                     address: currentUser.address || "",
                     cpf: currentUser.cpf ? currentUser.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : "",
-                    profile_photo_url: currentUser.profile_photo_url || "",
+                    avatar_url: currentUser.avatar_url || "",
                     sex: currentUser.sex || ""
                 });
+                if (currentUser.avatar_url) setAvatarPreview(currentUser.avatar_url);
 
                 if (currentUser.condominium_id) {
                     const condoList = await Condominium.filter({ id: currentUser.condominium_id });
@@ -115,7 +118,7 @@ export default function StudentProfile() {
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados do perfil:", err);
-                setError("Não foi possível carregar seus dados. Tente novamente.");
+                setError("NÃ£o foi possÃ­vel carregar seus dados. Tente novamente.");
             }
             setIsLoading(false);
         };
@@ -133,45 +136,42 @@ export default function StudentProfile() {
         setValue('cpf', formattedCpf, { shouldValidate: true });
     };
 
-    const handlePhotoUpload = async (event) => {
+        const handlePhotoUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        // Validar tipo de arquivo
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-            setPhotoUploadError("Apenas imagens JPG ou PNG são permitidas.");
+            setPhotoUploadError('Apenas imagens JPG ou PNG são permitidas.');
             return;
         }
-
-        // Validar tamanho (máximo 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            setPhotoUploadError("A imagem deve ter no máximo 5MB.");
+            setPhotoUploadError('A imagem deve ter no máximo 5MB.');
             return;
         }
-
         setIsUploadingPhoto(true);
-        setPhotoUploadError("");
-        setSuccess("");
-
+        setPhotoUploadError('');
+        setSuccess('');
         try {
-            const result = await UploadFile({ file });
-            setValue('profile_photo_url', result.file_url);
-            
-            if (!isEditing) {
-                await User.updateMyUserData({ profile_photo_url: result.file_url });
-                const updatedUser = await User.me();
-                setUser(updatedUser);
-                setSuccess("Foto de perfil atualizada com sucesso!");
-                setTimeout(() => setSuccess(""), 3000);
-            } else {
-                setSuccess("Foto carregada. Clique em 'Salvar' para aplicar as mudanças.");
-                setTimeout(() => setSuccess(""), 5000);
+            setAvatarFile(file);
+            // Try immediate upload to persist and preview
+            try {
+                const { localApi } = await import('@/api/localApi');
+                const up = await localApi.uploadFile(file);
+                if (up?.url) {
+                    setValue('avatar_url', up.url, { shouldDirty: true });
+                    setAvatarPreview(up.url);
+                } else {
+                    const url = URL.createObjectURL(file);
+                    setAvatarPreview(url);
+                }
+            } catch (e) {
+                const url = URL.createObjectURL(file);
+                setAvatarPreview(url);
             }
-            
         } catch (error) {
             console.error('Erro no upload da foto:', error);
-            setPhotoUploadError("Erro ao fazer upload da foto. Tente novamente.");
+            setPhotoUploadError('Erro ao fazer upload da foto. Tente novamente.');
         } finally {
             setIsUploadingPhoto(false);
             event.target.value = null;
@@ -196,7 +196,7 @@ export default function StudentProfile() {
                 date_of_birth: data.date_of_birth,
                 sex: data.sex,
                 age: age,
-                profile_photo_url: data.profile_photo_url,
+                avatar_url: data.avatar_url,
                 plan_status: user?.plan_status || 'active',
                 user_type: user?.user_type || 'student'
             };
@@ -220,7 +220,7 @@ export default function StudentProfile() {
                     date_of_birth: updatedUser.date_of_birth || "",
                     address: updatedUser.address || "",
                     cpf: updatedUser.cpf ? updatedUser.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : "",
-                    profile_photo_url: updatedUser.profile_photo_url || "",
+                    avatar_url: updatedUser.avatar_url || "",
                     sex: updatedUser.sex || ""
                 });
                 
@@ -230,7 +230,7 @@ export default function StudentProfile() {
             }
         } catch(err) {
             console.error("Erro ao salvar perfil:", err);
-            setError("Não foi possível salvar os dados. Tente novamente.");
+            setError("NÃ£o foi possÃ­vel salvar os dados. Tente novamente.");
         } finally {
             setIsSaving(false);
         }
@@ -240,14 +240,14 @@ export default function StudentProfile() {
         setError("");
         setSuccess("");
         if (!inviteCode.trim()) {
-            setError("Por favor, insira um código de convite.");
+            setError("Por favor, insira um cÃ³digo de convite.");
             return;
         }
 
         try {
             const condoList = await Condominium.filter({ invite_code: inviteCode.trim().toUpperCase() });
             if (condoList.length === 0) {
-                setError("Código de convite inválido ou não encontrado.");
+                setError("CÃ³digo de convite invÃ¡lido ou nÃ£o encontrado.");
                 return;
             }
             const targetCondo = condoList[0];
@@ -257,11 +257,11 @@ export default function StudentProfile() {
             setUser(updatedUser);
             setCondominium(targetCondo);
             setInviteCode("");
-            setSuccess(`Você foi associado ao condomínio ${targetCondo.name}!`);
+            setSuccess(`VocÃª foi associado ao condomÃ­nio ${targetCondo.name}!`);
             setTimeout(() => setSuccess(""), 3000);
         } catch (err) {
-            console.error("Erro ao associar condomínio:", err);
-            setError("Ocorreu um erro ao tentar associar o condomínio. Tente novamente.");
+            console.error("Erro ao associar condomÃ­nio:", err);
+            setError("Ocorreu um erro ao tentar associar o condomÃ­nio. Tente novamente.");
         }
     };
 
@@ -271,32 +271,32 @@ export default function StudentProfile() {
             navigateTo(createPageUrl("Index")); // UPDATED navigateTo
         } catch (error) {
             console.error("Erro ao fazer logout:", error);
-            setError("Não foi possível sair da conta. Tente novamente.");
+            setError("NÃ£o foi possÃ­vel sair da conta. Tente novamente.");
         }
     };
     
     const handleDeleteAccount = async () => {
         if (!user) return;
 
-        if (window.confirm("ATENÇÃO: Esta ação é IRREVERSÍVEL. Você tem certeza que deseja excluir PERMANENTEMENTE sua conta e todos os seus dados (fichas, treinos, progresso)?")) {
+        if (window.confirm("ATENÃ‡ÃƒO: Esta aÃ§Ã£o Ã© IRREVERSÃVEL. VocÃª tem certeza que deseja excluir PERMANENTEMENTE sua conta e todos os seus dados (fichas, treinos, progresso)?")) {
             const confirmationText = 'EXCLUIR';
-            const userInput = window.prompt(`Para confirmar, digite "${confirmationText}" em maiúsculas:`);
+            const userInput = window.prompt(`Para confirmar, digite "${confirmationText}" em maiÃºsculas:`);
             
             if (userInput === confirmationText) {
                 setIsSaving(true); // Reutilizar o estado de 'salvando' para desativar a UI
                 setError("");
                 try {
                     await User.delete(user.id);
-                    await User.logout(); // Fazer logout após a exclusão bem- sucedida
-                    alert("Sua conta foi excluída com sucesso.");
+                    await User.logout(); // Fazer logout apÃ³s a exclusÃ£o bem- sucedida
+                    alert("Sua conta foi excluÃ­da com sucesso.");
                     navigateTo(createPageUrl("Index"), { replace: true }); // UPDATED navigateTo
                 } catch (error) {
                     console.error("Erro ao excluir a conta:", error);
-                    setError("Não foi possível excluir sua conta. Se o problema persistir, entre em contato com o suporte.");
+                    setError("NÃ£o foi possÃ­vel excluir sua conta. Se o problema persistir, entre em contato com o suporte.");
                     setIsSaving(false);
                 }
-            } else if(userInput !== null) { // Apenas mostrar alerta se o usuário digitou algo errado (e não se apenas cancelou)
-                alert("Exclusão cancelada. A digitação não correspondeu.");
+            } else if(userInput !== null) { // Apenas mostrar alerta se o usuÃ¡rio digitou algo errado (e nÃ£o se apenas cancelou)
+                alert("ExclusÃ£o cancelada. A digitaÃ§Ã£o nÃ£o correspondeu.");
             }
         }
     };
@@ -321,7 +321,7 @@ export default function StudentProfile() {
                     </div>
                     <div>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Meu Perfil</h1>
-                        <p className="text-gray-600 mt-1">Gerencie suas informações e preferências</p>
+                        <p className="text-gray-600 mt-1">Gerencie suas informaÃ§Ãµes e preferÃªncias</p>
                     </div>
                 </div>
 
@@ -349,8 +349,8 @@ export default function StudentProfile() {
                             <div className="md:col-span-1 flex flex-col items-center">
                                 <div className="relative">
                                     <Avatar className="h-24 w-24 md:h-32 md:w-32">
-                                        {formData.profile_photo_url ? (
-                                            <AvatarImage src={formData.profile_photo_url} alt="Foto de perfil" className="object-cover" />
+                                        {formData.avatar_url ? (
+                                            <AvatarImage src={avatarPreview || formData.avatar_url} alt="Foto de perfil" className="object-cover" />
                                         ) : (
                                             <AvatarFallback className="bg-orange-100 text-orange-700 text-2xl md:text-4xl">
                                                 {formData.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
@@ -358,7 +358,7 @@ export default function StudentProfile() {
                                         )}
                                     </Avatar>
                                     
-                                    {/* Botão de upload de foto */}
+                                    {/* BotÃ£o de upload de foto */}
                                     <div className="absolute -bottom-2 -right-2">
                                         <input
                                             type="file"
@@ -396,7 +396,7 @@ export default function StudentProfile() {
                                 <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg w-full text-center">
                                     <p className="text-blue-700 text-sm flex items-center justify-center gap-2">
                                         <Camera className="h-4 w-4 flex-shrink-0" />
-                                        Clique no ícone da câmera para adicionar ou alterar sua foto de perfil (JPG/PNG, máx. 5MB)
+                                        Clique no Ã­cone da cÃ¢mera para adicionar ou alterar sua foto de perfil (JPG/PNG, mÃ¡x. 5MB)
                                     </p>
                                 </div>
                             </div>
@@ -428,7 +428,7 @@ export default function StudentProfile() {
                                                         date_of_birth: user.date_of_birth || "",
                                                         address: user.address || "",
                                                         cpf: user.cpf ? user.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : "",
-                                                        profile_photo_url: user.profile_photo_url || "",
+                                                        avatar_url: user.avatar_url || "",
                                                         sex: user.sex || ""
                                                     });
                                                 }}>
@@ -470,13 +470,13 @@ export default function StudentProfile() {
                                         <>
                                             <Input
                                                 id="full_name"
-                                                {...register("full_name", { required: "Nome completo é obrigatório" })}
+                                                {...register("full_name", { required: "Nome completo Ã© obrigatÃ³rio" })}
                                                 className="border-orange-200"
                                             />
                                             {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
                                         </>
                                     ) : (
-                                        <p className="p-2 bg-gray-50 rounded border">{formData.full_name || "Não informado"}</p>
+                                        <p className="p-2 bg-gray-50 rounded border">{formData.full_name || "NÃ£o informado"}</p>
                                     )}
                                 </div>
 
@@ -487,8 +487,8 @@ export default function StudentProfile() {
                                             <Input
                                                 id="cpf"
                                                 {...register("cpf", { 
-                                                    required: "CPF é obrigatório",
-                                                    validate: value => validateCpf(value) || "CPF inválido"
+                                                    required: "CPF Ã© obrigatÃ³rio",
+                                                    validate: value => validateCpf(value) || "CPF invÃ¡lido"
                                                 })}
                                                 onChange={handleCpfChange}
                                                 className="border-orange-200"
@@ -497,12 +497,12 @@ export default function StudentProfile() {
                                             {errors.cpf && <p className="text-red-500 text-xs mt-1">{errors.cpf.message}</p>}
                                         </>
                                     ) : (
-                                        <p className="p-2 bg-gray-50 rounded border font-mono">{formData.cpf || "Não informado"}</p>
+                                        <p className="p-2 bg-gray-50 rounded border font-mono">{formData.cpf || "NÃ£o informado"}</p>
                                     )}
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <Label htmlFor="sex">Gênero</Label>
+                                    <Label htmlFor="sex">GÃªnero</Label>
                                     {isEditing ? (
                                         <>
                                             <Select
@@ -520,7 +520,7 @@ export default function StudentProfile() {
                                             {errors.sex && <p className="text-red-500 text-xs mt-1">{errors.sex.message}</p>}
                                         </>
                                     ) : (
-                                        <p className="p-2 bg-gray-50 rounded border">{formData.sex === 'male' ? 'Masculino' : formData.sex === 'female' ? 'Feminino' : "Não informado"}</p>
+                                        <p className="p-2 bg-gray-50 rounded border">{formData.sex === 'male' ? 'Masculino' : formData.sex === 'female' ? 'Feminino' : "NÃ£o informado"}</p>
                                     )}
                                 </div>
 
@@ -533,12 +533,12 @@ export default function StudentProfile() {
                                                 id="date_of_birth"
                                                 type="date"
                                                 {...register("date_of_birth", { 
-                                                    required: "Data de nascimento é obrigatória",
+                                                    required: "Data de nascimento Ã© obrigatÃ³ria",
                                                     validate: (value) => {
                                                         const birthDate = new Date(value + 'T00:00:00'); 
                                                         const today = new Date();
-                                                        if (isNaN(birthDate.getTime())) return "Data de nascimento inválida.";
-                                                        if (birthDate >= today) return "Data de nascimento deve ser anterior à data atual.";
+                                                        if (isNaN(birthDate.getTime())) return "Data de nascimento invÃ¡lida.";
+                                                        if (birthDate >= today) return "Data de nascimento deve ser anterior Ã  data atual.";
                                                         return true;
                                                     }
                                                 })}
@@ -554,7 +554,7 @@ export default function StudentProfile() {
                                         </div>
                                     ) : (
                                         <p className="p-2 bg-gray-50 rounded border">
-                                            {formData.date_of_birth ? format(new Date(formData.date_of_birth + 'T00:00:00'), "dd/MM/yyyy", { locale: ptBR }) : "Não informado"}
+                                            {formData.date_of_birth ? format(new Date(formData.date_of_birth + 'T00:00:00'), "dd/MM/yyyy", { locale: ptBR }) : "NÃ£o informado"}
                                         </p>
                                     )}
                                 </div>
@@ -562,7 +562,7 @@ export default function StudentProfile() {
                                 <div className="space-y-2">
                                     <Label htmlFor="age">Idade</Label>
                                     <p className="p-2 bg-gray-100 rounded border text-gray-600">
-                                        {formData.age ? `${formData.age} anos` : "Não calculado"}
+                                        {formData.age ? `${formData.age} anos` : "NÃ£o calculado"}
                                     </p>
                                 </div>
 
@@ -573,30 +573,30 @@ export default function StudentProfile() {
                                             <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                                             <Input
                                                 id="phone"
-                                                {...register("phone", { required: "Telefone é obrigatório" })}
+                                                {...register("phone", { required: "Telefone Ã© obrigatÃ³rio" })}
                                                 className="border-orange-200 pl-10"
                                             />
                                             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                                         </div>
                                     ) : (
-                                        <p className="p-2 bg-gray-50 rounded border">{formData.phone || "Não informado"}</p>
+                                        <p className="p-2 bg-gray-50 rounded border">{formData.phone || "NÃ£o informado"}</p>
                                     )}
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="address">Endereço Completo</Label>
+                                <Label htmlFor="address">EndereÃ§o Completo</Label>
                                 {isEditing ? (
                                      <>
                                         <Input
                                             id="address"
-                                            {...register("address", { required: "Endereço é obrigatório" })}
+                                            {...register("address", { required: "EndereÃ§o Ã© obrigatÃ³rio" })}
                                             className="border-orange-200"
                                         />
                                         {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
                                     </>
                                 ) : (
-                                    <p className="p-2 bg-gray-50 rounded border">{formData.address || "Não informado"}</p>
+                                    <p className="p-2 bg-gray-50 rounded border">{formData.address || "NÃ£o informado"}</p>
                                 )}
                             </div>
                         </CardContent>
@@ -629,7 +629,7 @@ export default function StudentProfile() {
                             <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                                 <span className="text-gray-600">PAR-Q Completo</span>
                                 <Badge className={user?.par_q_completed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                    {user?.par_q_completed ? 'Sim' : 'Não'}
+                                    {user?.par_q_completed ? 'Sim' : 'NÃ£o'}
                                 </Badge>
                             </div>
                             <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
@@ -644,7 +644,7 @@ export default function StudentProfile() {
                             <div className="p-3 bg-blue-50 border border-blue-200 rounded">
                                 <div className="flex items-center gap-2 mb-2">
                                     <FileText className="h-4 w-4 text-blue-600" />
-                                    <span className="font-medium text-blue-800">Atestado Médico</span>
+                                    <span className="font-medium text-blue-800">Atestado MÃ©dico</span>
                                 </div>
                                 <p className="text-blue-700 text-sm mb-3">Documento anexado com sucesso</p>
                                 <Button size="sm" variant="outline" asChild>
@@ -660,7 +660,7 @@ export default function StudentProfile() {
                                      <FileText className="h-4 w-4 text-yellow-600" />
                                      <span className="font-medium text-yellow-800">PAR-Q Pendente</span>
                                  </div>
-                                 <p className="text-yellow-700 text-sm mb-3">Responda o questionário para ter acesso completo.</p>
+                                 <p className="text-yellow-700 text-sm mb-3">Responda o questionÃ¡rio para ter acesso completo.</p>
                                  <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-800 hover:bg-yellow-100" onClick={() => navigateTo(createPageUrl("Parq"))}> {/* Updated to use navigateTo */}
                                          Preencher PAR-Q
                                  </Button>
@@ -669,7 +669,7 @@ export default function StudentProfile() {
                     </CardContent>
                 </Card>
 
-                {/* Associar Condomínio */}
+                {/* Associar CondomÃ­nio */}
                 <Card className="border-orange-200 shadow-xl mb-6"> {/* Added mb-6 for spacing */}
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-orange-700">
@@ -697,10 +697,10 @@ export default function StudentProfile() {
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <p className="text-gray-600">Você ainda não está associado a um local de treino.</p>
+                                <p className="text-gray-600">VocÃª ainda nÃ£o estÃ¡ associado a um local de treino.</p>
                                 <div className="flex gap-3">
                                     <Input
-                                        placeholder="Código de convite"
+                                        placeholder="CÃ³digo de convite"
                                         value={inviteCode}
                                         onChange={(e) => setInviteCode(e.target.value)}
                                         className="border-orange-200"
@@ -730,3 +730,6 @@ export default function StudentProfile() {
         </div>
     );
 }
+
+
+

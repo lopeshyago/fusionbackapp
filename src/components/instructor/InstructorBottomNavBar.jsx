@@ -14,7 +14,7 @@ const NavItem = ({ page, icon: Icon, label, isActive, onClick }) => {
   };
 
   return (
-    <button 
+    <button
       onClick={handleClick}
       className={`flex flex-col items-center justify-center w-full pt-2 pb-1 transition-all duration-200 ${
         isActive ? 'text-white bg-gradient-to-t from-orange-500 to-orange-400' : 'text-gray-600 hover:text-orange-500'
@@ -35,17 +35,17 @@ export default function InstructorBottomNavBar({ activePage }) {
 
   const navItems = [
     { icon: Home, label: 'Início', page: 'Index', onClick: handleHomeClick },
-    { page: 'InstructorStudents', icon: Users, label: 'Alunos', page: 'InstructorStudents' },
-    { page: 'InstructorWorkouts', icon: Activity, label: 'Treinos', page: 'InstructorWorkouts' },
-    { page: 'Schedule', icon: Calendar, label: 'Horários', page: 'Schedule' },
-    { page: 'Timeline', icon: Camera, label: 'Timeline', page: 'Timeline' },
+    { icon: Users, label: 'Alunos', page: 'InstructorStudents' },
+    { icon: Activity, label: 'Treinos', page: 'InstructorWorkouts' },
+    { icon: Calendar, label: 'Horários', page: 'Schedule' },
+    { icon: Camera, label: 'Timeline', page: 'Timeline' },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t-2 border-orange-200 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] md:hidden z-50">
       <div className="flex justify-around items-stretch h-full">
-        {navItems.map((item, index) => (
-          <NavItem 
+        {navItems.map((item) => (
+          <NavItem
             key={item.label}
             page={item.page}
             icon={item.icon}
@@ -58,3 +58,4 @@ export default function InstructorBottomNavBar({ activePage }) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-
+﻿
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { ParqQuestion } from "@/api/entities_new";
 import { ParqResponse } from "@/api/entities_new";
 import { User } from "@/api/entities_new";
 import { createPageUrl } from "@/utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert"; // Added Alert import
 
 const logoUrl = "/fusionlogo.png";
@@ -33,6 +33,7 @@ export default function Parq() {
   const [error, setError] = useState("");
   const { navigateTo } = useOptimizedNavigation(); // Using the new optimized navigation hook
   const urlParams = new URLSearchParams(window.location.search);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +52,7 @@ export default function Parq() {
         });
         setAnswers(initialAnswers);
       } catch (e) {
-        setError("Erro ao carregar as perguntas do questionário.");
+        setError("Erro ao carregar as perguntas do questionÃ¡rio.");
         console.error(e);
       } finally {
         setIsLoading(false);
@@ -111,7 +112,7 @@ export default function Parq() {
         navigateTo('MedicalCertificate', { from: 'parq' }, true);
       } else {
         // If no risk, navigate to the 'next' URL parameter, or 'Index' by default
-        const nextUrl = urlParams.get('next') || 'Index';
+        const nextUrl = (urlParams.get('next') || (location && location.state && location.state.next) || 'Index');
         // Add 'from=parq' parameter to signal the origin
         navigateTo(`${nextUrl}?from=parq`, {}, true);
       }
@@ -125,18 +126,19 @@ export default function Parq() {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-50">Carregando questionário...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">Carregando questionÃ¡rio...</div>;
   }
 
   // Removed the `hasSubmitted` block as navigation is now direct after submission
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 py-12 px-4">
+      <img src={logoUrl} alt="Fusion Logo" className="h-20 w-auto mx-auto mb-6 drop-shadow-xl" />
       <Card className="max-w-3xl mx-auto shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-orange-700">Questionário de Prontidão para Atividade Física (PAR-Q)</CardTitle>
+          <CardTitle className="text-2xl font-bold text-orange-700">QuestionÃ¡rio de ProntidÃ£o para Atividade FÃ­sica (PAR-Q)</CardTitle>
           <CardDescription>
-            Este questionário visa identificar a necessidade de avaliação médica antes do início da atividade física. Por favor, responda com sinceridade.
+            Este questionÃ¡rio visa identificar a necessidade de avaliaÃ§Ã£o mÃ©dica antes do inÃ­cio da atividade fÃ­sica. Por favor, responda com sinceridade.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -157,7 +159,7 @@ export default function Parq() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="no" id={`no-${q.id}`} />
-                  <Label htmlFor={`no-${q.id}`}>Não</Label>
+                  <Label htmlFor={`no-${q.id}`}>NÃ£o</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -170,7 +172,7 @@ export default function Parq() {
           )}
 
           <Button onClick={handleSubmit} className="w-full bg-orange-500 hover:bg-orange-600 text-lg py-6" disabled={isSubmitting}>
-            {isSubmitting ? "Enviando..." : "Enviar Questionário"}
+            {isSubmitting ? "Enviando..." : "Enviar QuestionÃ¡rio"}
           </Button>
         </CardContent>
       </Card>

@@ -1,78 +1,53 @@
-
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
 import { createPageUrl } from '@/utils';
-import { User } from "@/api/entities_new";
-import { InstructorInvite } from "@/api/entities_new";
+import { localApi } from "@/api/localApi";
 
 const logoUrl = "/fusionlogo.png";
 
 export default function InstructorRegistration() {
   const [inviteCode, setInviteCode] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const handleValidateCode = async () => {
-    if (!inviteCode.trim()) {
-      setError("Por favor, insira o código de convite.");
-      return;
-    }
-    
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const invites = await InstructorInvite.filter({
-        code: inviteCode.trim(),
-        status: 'pending'
-      });
-
-      if (invites.length === 0) {
-        setError("Código inválido, expirado ou já utilizado. Peça um novo código a um administrador.");
-        setIsLoading(false);
-        return;
-      }
-      
-      const invite = invites[0];
-      if (new Date(invite.expires_at) < new Date()) {
-        setError("Este código de convite expirou.");
-        setIsLoading(false);
-        return;
-      }
-
-      const currentUser = await User.me();
-
-      // Update user type and mark invite as used
-      await Promise.all([
-        User.updateMyUserData({ user_type: 'instructor' }),
-        InstructorInvite.update(invite.id, { 
-          status: 'used',
-          used_by_instructor: currentUser.email
-        })
-      ]);
-
-      // Redirect to instructor login
-      alert("Validação bem-sucedida! Faça login para acessar sua conta.");
-      window.location.href = createPageUrl('InstructorLogin');
-      
-    } catch (err) {
-      console.error("Erro ao validar código:", err);
-      setError("Ocorreu um erro ao validar o código. Tente novamente.");
-      setIsLoading(false);
-    }
-  };
 
   const handleBackToMenu = () => {
     window.location.href = createPageUrl('Index');
   };
 
+  const handleRegister = async () => {
+    if (!inviteCode.trim() || !email || !password || !fullName) {
+      setError("Preencha todos os campos.");
+      return;
+    }
+    setIsLoading(true);
+    setError("");
+    try {
+      const res = await localApi.request("/register/instructor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, full_name: fullName, invite_code: inviteCode.trim() })
+      });
+      if (res?.token) {
+        localApi.setToken(res.token);
+      }
+      window.location.href = createPageUrl("InstructorProfile");
+    } catch (err) {
+      console.error("Erro ao cadastrar instrutor:", err);
+      setError(err.message || "Falha ao cadastrar. Verifique os dados.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
-      {/* Barra Superior */}
       <header className="bg-black text-white p-4 shadow-xl">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -86,15 +61,12 @@ export default function InstructorRegistration() {
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-80px)]">
         <Card className="w-full max-w-md shadow-2xl border-orange-200">
           <CardHeader className="text-center">
             <KeyRound className="h-12 w-12 mx-auto mb-4 text-orange-500" />
-            <CardTitle className="text-2xl font-bold">Quase lá!</CardTitle>
-            <CardDescription>
-              Insira o código de convite que você recebeu de um administrador para continuar.
-            </CardDescription>
+            <CardTitle className="text-2xl font-bold">Cadastro de Instrutor</CardTitle>
+            <CardDescription>Informe seus dados e o código de convite.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {error && (
@@ -103,17 +75,23 @@ export default function InstructorRegistration() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="inviteCode">Código de Convite</Label>
-              <Input
-                id="inviteCode"
-                placeholder="FUSION-INST-XXXX"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                className="border-orange-200 text-center tracking-widest"
-              />
+              <Label>Nome completo</Label>
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} className="border-orange-200" />
             </div>
-            <Button onClick={handleValidateCode} disabled={isLoading} className="w-full bg-orange-500 hover:bg-orange-600">
-              {isLoading ? "Validando..." : "Validar e Continuar"}
+            <div className="space-y-2">
+              <Label>E-mail</Label>
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="border-orange-200" />
+            </div>
+            <div className="space-y-2">
+              <Label>Senha</Label>
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border-orange-200" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="inviteCode">Código de Convite</Label>
+              <Input id="inviteCode" placeholder="FUSION-INST-XXXX" value={inviteCode} onChange={(e) => setInviteCode(e.target.value.toUpperCase())} className="border-orange-200 text-center tracking-widest" />
+            </div>
+            <Button onClick={handleRegister} disabled={isLoading} className="w-full bg-orange-500 hover:bg-orange-600">
+              {isLoading ? "Cadastrando..." : "Cadastrar"}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </CardContent>

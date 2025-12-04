@@ -24,13 +24,12 @@ const AdminDashboard = () => {
     loadUser();
   }, [navigateTo]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    // Clear any cached form data
-    if (window.history.replaceState) {
-      window.history.replaceState(null, null, window.location.href);
-    }
-    navigateTo('Index');
+  const handleLogout = async () => {
+    try {
+      const { User } = await import('@/api/entities_new');
+      await User.logout();
+    } catch {}
+    navigateTo('Index', {}, true);
   };
 
   if (!user) return null;
@@ -60,6 +59,23 @@ const AdminDashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="glass-effect fusion-shadow hover:shadow-2xl transition-all duration-300 border-0">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-orange-600">
+                  <Users className="w-6 h-6" />
+                  Meu Perfil
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">Atualize seus dados de administrador</p>
+                <Button
+                  className="w-full fusion-gradient text-white shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => navigateTo("AdminProfile")}
+                >
+                  Editar Perfil
+                </Button>
+              </CardContent>
+            </Card>
             <Card className="glass-effect fusion-shadow hover:shadow-2xl transition-all duration-300 border-0">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-orange-600">
@@ -176,3 +192,6 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
